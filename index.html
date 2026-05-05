@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>UJIAN PSKA 2026 | IPS Kelas IX | SMPN 247 Jakarta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(125deg, #e0eafc, #cfdef3, #eef2ff, #d9e4f5);
+            background-size: 300% 300%;
+            animation: gradientMove 12s ease infinite;
+            position: relative;
+            overflow-x: hidden;
+            padding: 1.5rem;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .closed-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            color: white;
+        }
+        .closed-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .closed-card i { font-size: 4rem; color: #ff6b6b; margin-bottom: 1rem; }
+        .closed-card h2 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .closed-card p { font-size: 1rem; margin-bottom: 0.5rem; }
+        .closed-card .date-info { background: rgba(255,255,255,0.15); padding: 0.8rem; border-radius: 1rem; margin: 1.2rem 0; }
+        .bubble-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; overflow: hidden; }
+        .bubble { position: absolute; background: rgba(255, 255, 255, 0.2); border-radius: 50%; animation: floatBubble 15s infinite ease-in-out; }
+        @keyframes floatBubble { 0% { transform: translateY(100vh) scale(0.6); opacity: 0; } 30% { opacity: 0.5; } 100% { transform: translateY(-20vh) scale(1.2); opacity: 0; } }
+        .main-container { max-width: 1300px; margin: 0 auto; position: relative; z-index: 10; }
+        .banner-container { display: flex; justify-content: center; margin-bottom: 1.8rem; }
+        .exam-banner { max-width: 750px; width: 100%; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 12px 24px -8px rgba(0,0,0,0.2); background: white; }
+        .exam-banner img { width: 100%; height: auto; display: block; }
+        .login-page { min-height: 70vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px); border-radius: 2rem; padding: 2rem; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 20px 40px -12px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,245,0.7); }
+        .login-card h1 { font-size: 1.6rem; font-weight: 800; color: #1e4a6e; margin: 0.5rem 0; }
+        .login-card h3 { color: #2c6e9e; margin-bottom: 1rem; }
+        .form-group { margin: 1.2rem 0; text-align: left; }
+        .form-group label { font-weight: 600; display: block; margin-bottom: 0.4rem; color: #1e3a5e; }
+        .form-group input, .form-group select { width: 100%; padding: 0.7rem 1rem; border-radius: 1rem; border: 1.5px solid #cbdbe6; font-family: inherit; }
+        .btn-login { background: #1e5a6e; border: none; padding: 0.8rem; border-radius: 2rem; font-size: 1rem; font-weight: 700; color: white; width: 100%; cursor: pointer; transition: 0.2s; }
+        .btn-login:hover { background: #0e3e4e; transform: translateY(-2px); }
+        .error-msg { color: #c0392b; font-size: 0.8rem; margin-top: 0.5rem; background: #ffe6e5; padding: 0.5rem; border-radius: 1rem; display: none; }
+        .exam-wrapper { display: none; }
+        .exam-header { background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-radius: 1.5rem; padding: 0.8rem 1.5rem; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .exam-header.warning-timer { background: rgba(220,53,69,0.85); animation: pulseRed 1s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(220,53,69,0.4); } 100% { box-shadow: 0 0 0 10px rgba(220,53,69,0); } }
+        .student-info { background: #eef2fa; padding: 0.3rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; }
+        .timer-card { background: #1e2f3a; padding: 0.4rem 1rem; border-radius: 2rem; color: white; font-family: monospace; font-size: 1.2rem; font-weight: 700; }
+        .timer-card.warning { background: #dc3545; animation: blinkTimer 0.5s infinite; }
+        @keyframes blinkTimer { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .exam-grid { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; }
+        @media (max-width: 760px) { .exam-grid { grid-template-columns: 1fr; } }
+        .question-card { background: rgba(255,255,250,0.92); backdrop-filter: blur(6px); border-radius: 1.8rem; padding: 1.5rem; }
+        .question-text { font-size: 0.95rem; font-weight: 500; margin: 0.8rem 0; line-height: 1.7; white-space: pre-wrap; }
+        .options { display: flex; flex-direction: column; gap: 0.6rem; margin: 0.8rem 0; }
+        .option-item { background: white; border-radius: 1rem; padding: 0.6rem 1rem; display: flex; align-items: flex-start; gap: 12px; border: 1px solid #e0e7f0; cursor: pointer; font-size: 0.88rem; line-height: 1.5; }
+        .option-item input { margin-top: 2px; }
+        .jawaban-benar { background: #e8f5e9; border-radius: 0.8rem; padding: 0.5rem 1rem; margin-top: 0.8rem; font-size: 0.75rem; color: #2e7d32; border-left: 4px solid #4caf50; }
+        .jawaban-benar i { margin-right: 8px; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 1.5rem; }
+        .btn { padding: 0.5rem 1.2rem; border-radius: 2rem; font-weight: 600; border: none; cursor: pointer; font-size: 0.85rem; }
+        .btn-primary { background: #1e5a6e; color: white; }
+        .btn-secondary { background: #eef2f8; }
+        .info-sidebar { background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); border-radius: 1.5rem; padding: 1rem; }
+        .soal-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0; }
+        .soal-number { width: 36px; height: 36px; background: #edf2f9; border-radius: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+        .soal-number.answered { background: #b9e0c5; }
+        .soal-number.active { background: #1e5a6e; color: white; }
+        .warning-notice { background: #fff3e0; border-radius: 1rem; padding: 0.6rem; font-size: 0.7rem; margin-top: 1rem; }
+        .blokir-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; }
+        .blokir-card { background: white; border-radius: 1.5rem; padding: 1.5rem; max-width: 350px; text-align: center; }
+        footer { text-align: center; font-size: 0.7rem; margin-top: 2rem; color: #4f6f8a; }
+        .result-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 300; align-items: center; justify-content: center; overflow-y: auto; padding: 2rem; }
+        .result-card { background: white; border-radius: 2rem; max-width: 800px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 1.8rem; }
+        .result-card h2 { color: #1e5a6e; margin-bottom: 1rem; }
+        .result-item { border-bottom: 1px solid #e0e7f0; padding: 0.8rem 0; font-size: 0.85rem; line-height: 1.5; }
+        .result-item.correct { background: #e6f7e6; }
+        .result-item.wrong { background: #ffe6e5; }
+        .close-result { background: #1e5a6e; color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 2rem; cursor: pointer; margin-top: 1rem; }
+        .badge-info { font-size: 0.75rem; }
+        .screenshot-warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(220,53,69,0.95);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            z-index: 10000;
+            font-weight: bold;
+            text-align: center;
+            pointer-events: none;
+            animation: warningFlash 0.5s ease;
+            white-space: nowrap;
+        }
+        @keyframes warningFlash {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        .volume-indicator {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            color: #0f0;
+            font-size: 8px;
+            padding: 3px 6px;
+            border-radius: 10px;
+            z-index: 1000;
+            font-family: monospace;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<div id="closedModal" class="closed-modal">
+    <div class="closed-card">
+        <i class="fas fa-lock"></i>
+        <h2>⚠️ UJIAN DITUTUP</h2>
+        <p>Asesmen PSKA 2026 telah berakhir pada:</p>
+        <div class="date-info">
+            <strong><i class="far fa-calendar-alt"></i> Jumat, 08 Mei 2026</strong><br>
+            <strong><i class="far fa-clock"></i> Pukul 06:45 WIB</strong>
+        </div>
+        <p>Terima kasih kepada seluruh peserta yang telah mengikuti ujian.</p>
+        <p style="margin-top: 1rem;">© SMP Negeri 247 Jakarta</p>
+    </div>
+</div>
+<div class="bubble-bg" id="bubbleContainer"></div>
+<div class="main-container" id="mainContent">
+    <div class="banner-container" id="mainBanner">
+        <div class="exam-banner"><img src="https://kurikulum-andro.github.io/B.INDO-IX/BANNER%20ASESMENT%20TP2025-2026.png" alt="Banner"></div>
+    </div>
+    <div id="loginPage" class="login-page">
+        <div class="login-card">
+            <div style="font-size: 3rem;">📖</div>
+            <h1>UJIAN PSKA 2026</h1>
+            <h3>Ilmu Pengetahuan Sosial Kelas IX</h3>
+            <div class="form-group">
+                <label><i class="fas fa-id-card"></i> Username</label>
+                <input type="text" id="studentId" placeholder="Masukan Username">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="studentPassword" placeholder="Masukan Password">
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-school"></i> Kelas</label>
+                <select id="studentClassSelect">
+                    <option>9A</option><option>9B</option><option>9C</option>
+                    <option>9D</option><option>9E</option><option>9F</option>
+                </select>
+            </div>
+            <button id="verifyLoginBtn" class="btn-login"><i class="fas fa-unlock-alt"></i> Verifikasi & Mulai Ujian</button>
+            <div id="loginError" class="error-msg"></div>
+            <p style="font-size: 0.7rem; margin-top: 1rem;"> created by @AdminSmp247jkt. Allrightserved@2026</p>
+        </div>
+    </div>
+    <div id="examWrapper" class="exam-wrapper">
+        <div class="exam-header" id="examHeader">
+            <div class="student-info"><i class="fas fa-user-check"></i> <span id="displayName">-</span> | <span id="displayClass">-</span></div>
+            <div class="timer-card" id="timerDisplay">01:30:00</div>
+        </div>
+        <div class="exam-grid">
+            <div class="question-card">
+                <div class="badge-info">Soal <span id="currentSoalIdx">1</span>/40</div>
+                <div id="questionText" class="question-text">Memuat soal...</div>
+                <div id="optionsContainer" class="options"></div>
+                <div id="kunciJawaban" class="jawaban-benar" style="display: none;"></div>
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" id="prevBtn">◀ Sebelum</button>
+                    <button class="btn btn-primary" id="nextBtn">Selanjutnya ▶</button>
+                </div>
+            </div>
+            <div class="info-sidebar">
+                <h4>📊 Progres</h4>
+                <div><strong id="answeredCount">0</strong> / 40 terjawab</div>
+                <div class="soal-grid" id="soalGrid"></div>
+                <button id="submitBtn" class="btn btn-primary" style="width:100%;">Kirim Jawaban</button>
+                <div class="warning-notice">🔒 Jangan Melanggar Aturan! - Screenshot dilarang!</div>
+            </div>
+        </div>
+        <footer>SMP Negeri 247 Jakarta | Ujian Berbasis Komputer</footer>
+    </div>
+</div>
+<div id="securityModal" class="blokir-modal">
+    <div class="blokir-card">
+        <i class="fas fa-ban" style="font-size:2rem; color:#c0392b;"></i>
+        <h3>⚠️ PELANGGARAN</h3>
+        <p id="securityMsg">Akses view-source atau screenshot terdeteksi!</p>
+        <button id="closeSecurityBtn" style="background:#1e5a6e; color:white; border:none; padding:0.5rem 1rem; border-radius:1rem;">Tutup</button>
+    </div>
+</div>
+<div id="resultModal" class="result-modal">
+    <div class="result-card">
+        <h2>📊 HASIL UJIAN</h2>
+        <div id="resultDetails"></div>
+        <button id="closeResultBtn" class="close-result">Tutup</button>
+    </div>
+</div>
+<div class="volume-indicator" id="volumeIndicator">🔊 Volume: 50% (Terkunci)</div>
+
+<script>
+    // =============== VOLUME INDICATOR ===============
+    const volumeIndicator = document.getElementById('volumeIndicator');
+    if (volumeIndicator) { volumeIndicator.style.display = 'block'; }
+    
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'VolumeUp' || e.key === 'VolumeDown' || e.key === 'VolumeMute') {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+
+    // =============== SCREENSHOT DETECTION ===============
+    let screenshotViolation = false;
+    let soundPlayed = false;
+    
+    function playLoudAlert() {
+        if (soundPlayed) return;
+        soundPlayed = true;
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.frequency.value = 880;
+            gainNode.gain.value = 0.8;
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 1);
+            oscillator.stop(audioCtx.currentTime + 1);
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 200, 500]);
+            }
+        } catch(e) { console.log('Suara tidak dapat diputar'); }
+        
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'screenshot-warning';
+        warningDiv.innerHTML = '🚫 PELANGGARAN! SCREENSHOT DILARANG! 🚫';
+        document.body.appendChild(warningDiv);
+        setTimeout(() => { warningDiv.remove(); }, 2000);
+        setTimeout(() => { soundPlayed = false; }, 2000);
+    }
+    
+    function triggerScreenshotViolation() {
+        if (!screenshotViolation && examWrapper && examWrapper.style.display === 'block') {
+            screenshotViolation = true;
+            playLoudAlert();
+            document.getElementById('securityModal').style.display = 'flex';
+            document.getElementById('securityMsg').innerHTML = '🚫 PELANGGARAN! Screenshot terdeteksi! Ujian dibatalkan.';
+            if (typeof examSubmitted !== 'undefined' && !examSubmitted && typeof autoSubmit === 'function') {
+                autoSubmit('PELANGGARAN: Screenshot terdeteksi!');
+            }
+            document.body.style.pointerEvents = 'none';
+        }
+    }
+    
+    document.addEventListener('keyup', function(e) {
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+            e.preventDefault();
+            triggerScreenshotViolation();
+        }
+        if (e.key === 'PrintScreen' && (e.ctrlKey || e.altKey || e.metaKey)) {
+            e.preventDefault();
+            triggerScreenshotViolation();
+        }
+    });
+    
+    let lastVisibilityTime = Date.now();
+    let lastFocusTime = Date.now();
+    
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && examWrapper && examWrapper.style.display === 'block') {
+            const now = Date.now();
+            if (now - lastVisibilityTime < 500) {
+                triggerScreenshotViolation();
+            }
+            lastVisibilityTime = now;
+        }
+    });
+    
+    window.addEventListener('blur', function() {
+        lastFocusTime = Date.now();
+        if (examWrapper && examWrapper.style.display === 'block') {
+            setTimeout(() => {
+                if (document.hidden) {
+                    const now = Date.now();
+                    if (now - lastFocusTime < 500) {
+                        triggerScreenshotViolation();
+                    }
+                }
+            }, 100);
+        }
+    });
+    
+    window.addEventListener('resize', function() {
+        if (examWrapper && examWrapper.style.display === 'block') {
+            setTimeout(() => {
+                if (document.hidden) {
+                    triggerScreenshotViolation();
+                }
+            }, 50);
+        }
+    });
+    
+    // =============== DATA USER ===============
+    const validParticipants = {
+        "admin247": { name: "ADMIN", password: "admin123", kelas: "9F" },
+        "Rafa": { name: "Rafa Nayaka", password: "rafa03", kelas: "9F" },
+    };
+    
+    // =============== PENUTUPAN WEB (TANGGAL 8 MEI 2026 JAM 06:45 WIB) ===============
+    const closeDate = new Date(2026, 4, 8, 6, 45, 0);
+    function checkWebsiteAccess() {
+        const now = new Date();
+        const closedModal = document.getElementById('closedModal');
+        const mainContent = document.getElementById('mainContent');
+        if (now >= closeDate) {
+            if (closedModal) closedModal.style.display = 'flex';
+            if (mainContent) mainContent.style.display = 'none';
+            document.body.style.overflow = 'hidden';
+            return false;
+        } else {
+            if (closedModal) closedModal.style.display = 'none';
+            if (mainContent) mainContent.style.display = 'block';
+            document.body.style.overflow = 'auto';
+            return true;
+        }
+    }
+    checkWebsiteAccess();
+    setInterval(checkWebsiteAccess, 60000);
+    
+    // =============== BLOKIR VIEW-SOURCE ===============
+    let viewSourceViolation = false;
+    function triggerViewSourceViolation() {
+        if (!viewSourceViolation && examWrapper && examWrapper.style.display === 'block') {
+            viewSourceViolation = true;
+            playLoudAlert();
+            document.getElementById('securityModal').style.display = 'flex';
+            document.getElementById('securityMsg').innerHTML = '🚫 PELANGGARAN! Akses view-source terdeteksi! Ujian dibatalkan.';
+            if (typeof examSubmitted !== 'undefined' && !examSubmitted && typeof autoSubmit === 'function') {
+                autoSubmit('PELANGGARAN: view-source terdeteksi!');
+            }
+            document.body.style.pointerEvents = 'none';
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.key === 'u') || (e.ctrlKey && e.key === 'U') ||
+            (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+            (e.ctrlKey && e.key === 's') || (e.ctrlKey && e.key === 'S')) {
+            e.preventDefault();
+            triggerViewSourceViolation();
+        }
+    });
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); triggerViewSourceViolation(); });
+    document.getElementById('closeSecurityBtn').onclick = function() { document.getElementById('securityModal').style.display = 'none'; };
+    
+    // =============== SOAL IPS (40 SOAL) ===============
+    const soalBank = [
+        { id: 1, soal: "Benua Asia adalah benua terbesar dan mencakup sekitar 44,46 juta kilometer persegi. Batas Benua Asia di sebelah selatan adalah...", opsi: ["A. Samudra Arktik", "B. Selat Bering", "C. Samudra Pasifik", "D. Samudra Hindia"], jawaban: "D" },
+        { id: 2, soal: "Benua Amerika memiliki ciri khas tersendiri karena memanjang dari utara sampai selatan. Sebelah selatan Benua Amerika berbatasan dengan...", opsi: ["A. Laut Artik dan Pulau Greenland", "B. Samudra Atlantik", "C. Samudra Pasifik dan Samudra Antartika", "D. Selat Bering dan Samudra Pasifik"], jawaban: "C" },
+        { id: 3, soal: "Manusia modern menyebar ke berbagai belahan dunia melalui jalur migrasi tertentu. Jalur migrasi mana saja yang paling mungkin digunakan dalam persebaran awal manusia modern?", opsi: ["A. Jalur darat melalui Timur Tengah ke Australia dan Afrika", "B. Jalur laut langsung dari Afrika ke Amerika", "C. Jalur udara melalui penerbangan awal manusia", "D. Jalur pantai sepanjang Samudra Hindia menuju Asia Tenggara dan Australia"], jawaban: "D" },
+        { id: 4, soal: "Berdasarkan kondisi geografisnya, sebagian besar wilayah Benua Australia berupa...", opsi: ["A. tundra", "B. stepa", "C. gurun", "D. hutan"], jawaban: "C" },
+        { id: 5, soal: "Perhatikan data batas geografis berikut!\n1) Sebelah utara berbatasan dengan Laut Tengah\n2) Sebelah timur berbatasan dengan Samudra Atlantik\n3) Sebelah selatan berbatasan dengan Samudra Hindia\n4) Sebelah barat berbatasan dengan Laut Merah\n\nBatas geografis Benua Afrika ditunjukkan oleh nomor...", opsi: ["A. 1 dan 2", "B. 1 dan 3", "C. 2 dan 4", "D. 3 dan 4"], jawaban: "B" },
+        { id: 6, soal: "Kondisi fisik wilayah negara Amerika Serikat salah satunya bercirikan dengan adanya perubahan suhu yang mencolok. Hal ini disebabkan oleh...", opsi: ["A. adanya iklim laut yang sedang", "B. posisi astronomis Amerika Serikat yang dekat dengan matahari", "C. adanya pertemuan arus panas dan arus dingin", "D. adanya angin tornado"], jawaban: "C" },
+        { id: 7, soal: "Perhatikan gambar ras Kaukasoid. Pada umumnya ras Kaukasoid hidup di kawasan...", opsi: ["A. Asia Utara dan Asia Tengah", "B. Asia Tengah dan Asia Timur", "C. Asia Timur dan Asia Selatan", "D. Asia Utara dan Asia Barat"], jawaban: "D" },
+        { id: 8, soal: "Penerapan teknologi genetika menggunakan DNA mitokondria (mtDNA) untuk menelusuri asal usul manusia dengan mencari tahu hubungan kekerabatan antarpopulasi manusia. Penerapan teknologi tersebut dapat digunakan para ahli untuk mengungkapkan asal usul manusia berdasarkan persamaan...", opsi: ["A. genetik", "B. fenotif", "C. golongan darah", "D. ciri fisik"], jawaban: "A" },
+        { id: 9, soal: "Sumber genetik yang dapat bertahan dalam waktu lama adalah...", opsi: ["A. kuku", "B. tulang belulang", "C. rambut", "D. artefak"], jawaban: "B" },
+        { id: 10, soal: "Deutro Melayu atau disebut juga Melayu Muda adalah suku bangsa yang tiba di Kepulauan Indonesia pada sekitar 500 sebelum masehi. Sistem keturunan yang dianut oleh Deutro Melayu adalah...", opsi: ["A. patrilineal", "B. matrilineal", "C. kakek", "D. ayah"], jawaban: "A" },
+        { id: 11, soal: "DNA, atau Deoxyribonucleic Acid, adalah molekul genetik yang menyimpan informasi untuk perkembangan, fungsi, dan reproduksi semua organisme hidup. DNA mitokondria dapat digunakan untuk merekonstruksi sejarah asal usul dan persebaran manusia dari sisi....", opsi: ["A. 1, 2, dan 3", "B. 2, 3, dan 4", "C. 1, 3, dan 5", "D. 4, 5, dan 6"], jawaban: "C" },
+        { id: 12, soal: "Perhatikan ciri-ciri fisik berikut!\n1) Ruang tengkorak lebih besar.\n2) Volume otak kurang dari 1000 cc.\n3) Tengkorak kepala atas bulat.\n4) Tengkorak kepala atas datar dan lancip.\nCiri-ciri fisik manusia modern ditunjukkan oleh nomor....", opsi: ["A. 1 dan 2", "B. 1 dan 3", "C. 2 dan 3", "D. 2 dan 4"], jawaban: "B" },
+        { id: 13, soal: "Perbedaan manusia modern dengan manusia purba dalam aspek nonfisik adalah...", opsi: ["A. manusia purba telah mengenal kepercayaan setelah kematian, manusia modern mengenal penguburan jenazah yang meninggal", "B. manusia purba telah hidup menetap, manusia modern telah nomaden", "C. manusia purba belum mengenal perhiasan, manusia modern telah mengenal perhiasan, seperti manik-manik, kalung, gelang", "D. manusia purba belum mengenal bahasa, manusia modern telah mengenal bahasa"], jawaban: "C" },
+        { id: 14, soal: "Perhatikan ciri-ciri ras berikut!\n1) Warna kulit putih kekuningan.\n2) Ukuran badan tidak terlalu besar dan tinggi.\n3) Tersebar di Asia dan Amerika.\nBerdasarkan ciri-ciri tersebut, ras yang dimaksud adalah....", opsi: ["A. Negroid", "B. Mongoloid", "C. Australoid", "D. Veddoid"], jawaban: "B" },
+        { id: 15, soal: "Salah satu jenis Homo Sapiens yang dianggap sebagai awal manusia modern antara lain yang ditemukan di Eropa, yaitu....", opsi: ["A. Homo Neanderthalensis", "B. Homo Erectus", "C. Homo Habilis", "D. Cro Magnon"], jawaban: "D" },
+        { id: 16, soal: "Bangunan Kota Mohenjo-Daro dan Harappa memperlihatkan tingginya peradaban manusia ribuan tahun sebelum Masehi, dengan beberapa jalan, saluran air, dan pemukiman penduduk yang dirancang secara baik. Reruntuhan dua bangunan kota itu terletak di Lembah Sungai....", opsi: ["A. Eufrat-Tigris", "B. Indus", "C. Nil", "D. Gangga"], jawaban: "B" },
+        { id: 17, soal: "Perbedaan sumber daya alam antarnegara sering kali menjadi pemicu utama terjadinya kerja sama internasional. Namun, jika suatu negara memiliki sumber daya alam yang melimpah tetapi tidak memiliki teknologi untuk mengolahnya, tindakan paling strategis yang mencerminkan prinsip kerja sama internasional yang saling menguntungkan adalah...", opsi: ["A. Melakukan kerja sama transfer dan investasi dengan negara yang memiliki keahlian.", "B. Menjual seluruh sumber daya alam mentah ke negara maju demi mendapatkan devisa cepat.", "C. Meminjam modal besar dari lembaga keuangan internasional untuk membeli mesin pengolah sendiri.", "D. Menutup diri dari pasar global agar sumber daya alam tidak dikuasai oleh perusahaan asing"], jawaban: "A" },
+        { id: 18, soal: "Kota Mohenjo-Daro dan Harappa merupakan dua kota yang maju tertua di dunia terutama dalam hal....", opsi: ["A. ekonomi", "B. kesenian", "C. tata kota", "D. pemerintahan"], jawaban: "C" },
+        { id: 19, soal: "Dalam peradaban India, Sungai Gangga dianggap suci oleh sebagian besar Masyarakat India, hal tersebut dikarenakan....", opsi: ["A. Sungai Gangga merupakan warisan Dewa Wisnu", "B. Sungai Gangga dapat menyembuhkan berbagai penyakit", "C. Sungai Gangga merupakan salah satu tempat peribadatan", "D. Sungai Gangga dapat menghapus dari segala dosa"], jawaban: "D" },
+        { id: 20, soal: "Mesopotamia merupakan daerah yang terletak di antara dua aliran sungai, yaitu....", opsi: ["A. Indus dan Gangga", "B. Nil dan Kuning", "C. Eufrat dan Tigris", "D. Kuning dan Howang Ho"], jawaban: "C" },
+        { id: 21, soal: "Pusat peradaban bangsa Tiongkok banyak ditemukan di Lembah Sungai Huang-Ho dan Yang Tse. Hal tersebut karena...", opsi: ["A. pada kedua daerah tersebut sumber airnya cukup banyak", "B. pada kedua daerah tersebut terdapat lumpur yang menyuburkan", "C. air Sungai Huang-Ho dan Yang Tse sering meluap", "D. pada kedua sungai tersebut airnya mengandung banyak lumpur"], jawaban: "B" },
+        { id: 22, soal: "PBB adalah singkatan dari Perserikatan Bangsa-Bangsa, sebuah organisasi internasional yang dibentuk setelah Perang Dunia II. Kerja sama yang dijalin antara Perserikatan Bangsa-Bangsa (PBB), OPEC, dan IMF merupakan bentuk kerja sama...", opsi: ["A. multilateral", "B. regional", "C. internasional", "D. bilateral"], jawaban: "A" },
+        { id: 23, soal: "Indonesia merupakan salah satu anggota IDB. Salah satu alasan Indonesia bergabung dalam organisasi tersebut adalah karena Indonesia memiliki jumlah penduduk muslim yang banyak. Tujuan utama IDB adalah...", opsi: ["A. meningkatkan pembangunan ekonomi dan sosial negara-negara yang menjadi anggotanya", "B. menjalin kerja sama di bidang industri dan pertanian", "C. mengusahakan kestabilan kurs valuta asing", "D. mengusahakan standar barang-barang yang diperdagangkan"], jawaban: "A" },
+        { id: 24, soal: "Perhatikan badan kerja sama internasional berikut!\n1) International Monetary Fund.\n2) World Bank.\n3) Consultative Group on Indonesia.\n4) General Agreement on Tariff and Trade.\n5) World Trade Organization.\n6) ASEAN Free Trade Area.\n\nOrganisasi kerja sama internasional yang bergerak dalam bidang perdagangan ditunjukkan oleh nomor...", opsi: ["A. 1, 3 dan 4", "B. 1, 3 dan 5", "C. 2, 5 dan 6", "D. 4, 5 dan 6"], jawaban: "D" },
+        { id: 25, soal: "NAFTA (North American Free Trade Agreement) adalah perjanjian perdagangan bebas antara Amerika Serikat, Kanada, dan Meksiko. Berikut tujuan dari North American Free Trade Agreement (NAFTA), yang benar adalah nomor...\n\n1. pengaturan impor dan produksi sesama anggota\n2. membantu sesama anggota bila diserang negara lain\n3. mengusahakan perlindungan bagi konsumen\n4. Saling bekerja sama dalam bidang pertahanan dan keamanan\n5. meningkatkan kegiatan ekonomi para anggota\n6. pengembangan penggunaan nuklir untuk meningkatkan produktivitas", opsi: ["A. 1, 2, dan 3", "B. 2, 3, dan 4", "C. 1, 3, dan 5", "D. 4, 5, dan 6"], jawaban: "C" },
+        { id: 26, soal: "ECOSOC adalah singkatan dari Economic and Social Council (Dewan Ekonomi dan Sosial). Berikut tujuan dari Economic and Social Council (ECOSOC) adalah...", opsi: ["A. mempertinggi mutu kehidupan, bantuan ekonomi, dan sosial", "B. membantu negara anggota untuk meningkatkan hasil produksi pertanian melalui bantuan teknik", "C. membantu negara-negara berkembang untuk kemajuan industri", "D. membantu negara anggota dalam meningkatkan ekspor"], jawaban: "A" },
+        { id: 27, soal: "Perhatikan tindakan berikut!\n1) Memakai bahan tambang sebanyak-banyaknya.\n2) Memakai teknologi yang tidak ramah lingkungan.\n3) Mengelola dan mengembangkan keanekaragaman hayati.\n4) Melakukan rehabilitasi dan reklamasi lahan kritis.\n\nTindakan yang mencerminkan pembangunan berkelanjutan ditunjukkan oleh nomor...", opsi: ["A. 3 dan 4", "B. 1 dan 2", "C. 2 dan 3", "D. 1 dan 3"], jawaban: "A" },
+        { id: 28, soal: "Dana Moneter Internasional adalah organisasi internasional beranggota 191 negara. Lembaga ekonomi International Monetary Fund (IMF) didirikan dengan salah satu tujuannya adalah...", opsi: ["A. membantu negara-negara anggota yang mengalami defisit neraca pembayaran", "B. membantu negara-negara anggota dalam permodalan", "C. membantu negara-negara berkembang di bidang pertanian", "D. membantu perkembangan ekonomi, kebudayaan, dan kesehatan"], jawaban: "A" },
+        { id: 29, soal: "Lembaga kerja sama ekonomi internasional yang bertujuan mengusahakan keseimbangan perdagangan dan harga di pasar dunia dengan memperkecil hambatan perdagangan internasional yang menyangkut tarif (bea masuk) adalah...", opsi: ["A. IMF", "B. World Bank", "C. WTO", "D. UNDP"], jawaban: "C" },
+        { id: 30, soal: "Pemerintah menciptakan gerakan One Man One Tree khususnya di daerah perkotaan. Lingkungan hijau di perkotaan berguna untuk...", opsi: ["A. menyerap karbon dioksida hasil pembakaran bahan bakar fosil", "B. meredam polusi udara", "C. mengurangi radiasi sinar ultraviolet", "D. menyediakan fasilitas taman kota"], jawaban: "A" },
+        { id: 31, soal: "Bank dalam perekonomian melakukan berbagai kegiatan, salah satunya menghimpun dana. Menghimpun dana dalam kegiatan perbankan adalah...", opsi: ["A. mengumpulkan atau mencari dana atau uang, dengan cara membeli dari masyarakat luas dalam bentuk simpanan giro, tabungan, dan deposito", "B. melemparkan kembali dana yang diperoleh lewat simpanan giro, tabungan, dan deposit ke masyarakat dalam bentuk pinjaman (kredit)", "C. bank atas nama nasabah melakukan penagihan surat utang atau wesel kepada pihak lain", "D. bank menjamin jual beli surat berharga yang terjadi di masyarakat"], jawaban: "A" },
+        { id: 32, soal: "Setiap orang memiliki pendapatannya masing-masing. Misalnya, Rika miliki uang Rp 10.000.000,00 yang tidak digunakan untuk apa pun. Selama ini, ia hanya mengetahui layanan tabungan di bank. Tindakan Rika menunjukkan tingkatan kemampuan literasi keuangan yaitu...", opsi: ["A. well literate", "B. sufficient literate", "C. less literate", "D. not literate"], jawaban: "C" },
+        { id: 33, soal: "Pembangunan berkelanjutan berprinsip bahwa pemanfaatan sumber daya alam harus memperhatikan kepentingan generasi mendatang. Contoh tindakan yang sesuai prinsip pembangunan berkelanjutan adalah...", opsi: ["A. Memperluas hutan tanaman industri untuk meningkatkan ekspor kertas", "B. Memanfaatkan kekayaan sumber daya flora dan fauna di hutan secara eksploitasi", "C. Menetapkan sebagian hutan sebagai taman nasional dan daerah cagar alam", "D. Memperbanyak penangkaran buaya untuk diambil kulitnya sebagai bahan baku tas dan sepatu"], jawaban: "C" },
+        { id: 34, soal: "Ciri pembangunan berkelanjutan adalah dengan menghindari kerusakan dan pencemaran lingkungan. Upaya menghindari kerusakan dan pencemaran dilakukan dengan...", opsi: ["A. penerapan analisis dampak lingkungan", "B. pengelolaan proyek lingkungan terbatas", "C. mitigasi bencana sesuai konservasi lingkungan", "D. eksplorasi lingkungan hidup semaksimal mungkin"], jawaban: "A" },
+        { id: 35, soal: "Dampak kondisi infrastruktur terhadap interaksi antarruang jika daerahnya memiliki jalanan yang tidak beraspal dan berlubang adalah...", opsi: ["A. meningkatnya interaksi antarruang karena persaingan dagang menurun", "B. meningkatnya interaksi antarruang karena permintaan barang menurun", "C. menurunnya interaksi antarruang karena waktu pengiriman bertambah", "D. menurunnya interaksi antarruang karena upah tenaga kerja menurun"], jawaban: "C" },
+        { id: 36, soal: "Perhatikan fenomena berikut: Perusahaan multinasional dari negara maju membuka pabrik di Indonesia karena upah tenaga kerja yang relatif murah. Dampak negatif yang mungkin timbul bagi kedaulatan ekonomi jika tidak diregulasi dengan baik adalah...", opsi: ["A. Ketergantungan terhadap investasi asing dan eksploitasi sumber daya secara berlebihan.", "B. Terjadinya pertukaran budaya antara pekerja asing dan pekerja lokal.", "C. Meningkatnya pendapatan pajak negara dari sektor industri manufaktur.", "D. Meningkatnya jumlah lapangan kerja di daerah operasional pabrik."], jawaban: "A" },
+        { id: 37, soal: "Benda yang digunakan sebagai uang tidak boleh cepat rusak karena digunakan dalam kegiatan pertukaran setiap hari. Syarat uang tersebut disebut...", opsi: ["A. durability", "B. portability", "C. stability value", "D. acceptability"], jawaban: "A" },
+        { id: 38, soal: "Perbedaan sumber daya alam antarnegara sering kali menjadi pemicu utama terjadinya kerja sama internasional. Tindakan paling strategis yang mencerminkan prinsip kerja sama internasional yang saling menguntungkan adalah...", opsi: ["A. Melakukan kerja sama transfer teknologi dan investasi dengan negara yang memiliki keahlian", "B. Menjual seluruh sumber daya alam mentah ke negara maju demi mendapatkan devisa cepat.", "C. Meminjam modal besar dari lembaga keuangan internasional untuk membeli mesin pengolah sendiri", "D. Menutup diri dari pasar global agar sumber daya alam tidak dikuasai oleh perusahaan asing"], jawaban: "A" },
+        { id: 39, soal: "Peranan Sungai Nil begitu penting bagi lahirnya kehidupan masyarakat di lembah sungai tersebut. Negeri Mesir sebagai 'Egypt is the gift of the Nile' (Mesir sebagai hadiah Sungai Nil) merupakan pendapat dari...", opsi: ["A. Herodotus", "B. Aristoteles", "C. Leopold Von Ranke", "D. R.G. Colling Wood"], jawaban: "A" },
+        { id: 40, soal: "Perhatikan pernyataan berikut!\n1. Adanya peningkatan jumlah penduduk berbanding lurus dengan permintaan hasil olahan minyak bumi.\n2. Minyak bumi merupakan jenis sumber daya alam yang tidak terbarukan.\n\nKesimpulan yang tepat adalah...", opsi: ["A. Penghentian kegiatan manusia menggunakan sumber energi dari olahan minyak bumi perlu dilakukan", "B. Meningkatkan kegiatan penelitian sumber energi alternatif untuk menggantikan minyak bumi perlu dilakukan.", "C. Penghentian upaya pencarian sumber tambang minyak bumi untuk mencegah habisnya minyak bumi perlu dilakukan", "D. Meningkatkan pencarian sumber tambang baru minyak bumi untuk mencegah kekurangan produksi perlu dilakukan"], jawaban: "B" }
+    ];
+
+    let examSubmitted = false, timerSeconds = 90 * 60, timerInterval;
+    let jawaban = new Array(40).fill(null), currentIndex = 0;
+    
+    const loginPage = document.getElementById('loginPage'), examWrapper = document.getElementById('examWrapper');
+    const mainBanner = document.getElementById('mainBanner'), verifyBtn = document.getElementById('verifyLoginBtn');
+    const studentIdInput = document.getElementById('studentId'), studentPasswordInput = document.getElementById('studentPassword');
+    const studentClassSelect = document.getElementById('studentClassSelect'), loginErrorDiv = document.getElementById('loginError');
+    const displayNameSpan = document.getElementById('displayName'), displayClassSpan = document.getElementById('displayClass');
+    const questionTextEl = document.getElementById('questionText'), optionsContainer = document.getElementById('optionsContainer');
+    const kunciJawabanDiv = document.getElementById('kunciJawaban'), prevBtn = document.getElementById('prevBtn'), nextBtn = document.getElementById('nextBtn');
+    const currentIdxSpan = document.getElementById('currentSoalIdx'), answeredCountSpan = document.getElementById('answeredCount');
+    const soalGridDiv = document.getElementById('soalGrid'), submitBtn = document.getElementById('submitBtn'), timerDisplay = document.getElementById('timerDisplay');
+    const examHeader = document.getElementById('examHeader'), resultModal = document.getElementById('resultModal'), resultDetails = document.getElementById('resultDetails');
+    const closeResultBtn = document.getElementById('closeResultBtn');
+
+    function verifyLogin() {
+        const username = studentIdInput.value.trim();
+        const password = studentPasswordInput.value.trim();
+        const selectedClass = studentClassSelect.value;
+        
+        if (username === "" || password === "") { 
+            loginErrorDiv.innerText = '❌ Username dan Password harus diisi!'; 
+            loginErrorDiv.style.display = 'block'; 
+            return; 
+        }
+        
+        const participant = validParticipants[username];
+        if (!participant || participant.password !== password) { 
+            loginErrorDiv.innerText = '❌ Username atau Password salah!'; 
+            loginErrorDiv.style.display = 'block'; 
+            return; 
+        }
+        
+        if (participant.kelas !== selectedClass) { 
+            loginErrorDiv.innerText = `❌ Kelas tidak sesuai! Anda terdaftar di kelas ${participant.kelas}`; 
+            loginErrorDiv.style.display = 'block'; 
+            return; 
+        }
+        
+        displayNameSpan.innerText = participant.name; 
+        displayClassSpan.innerText = selectedClass;
+        mainBanner.style.display = 'none'; 
+        loginPage.style.display = 'none'; 
+        examWrapper.style.display = 'block';
+        resetExam(); 
+        startTimer(); 
+        renderSoal(); 
+        renderSoalGrid(); 
+        updateStats();
+    }
+    
+    function resetExam() { jawaban = new Array(40).fill(null); currentIndex = 0; examSubmitted = false; timerSeconds = 90 * 60; updateTimerDisplay(); if (timerInterval) clearInterval(timerInterval); examHeader.classList.remove('warning-timer'); timerDisplay.classList.remove('warning'); }
+    function updateStats() { const answered = jawaban.filter(a => a !== null).length; answeredCountSpan.innerText = answered; renderSoalGrid(); }
+    function renderSoal() {
+        const soal = soalBank[currentIndex];
+        questionTextEl.innerHTML = `<i class="fas fa-globe"></i> ${soal.soal}`;
+        let optsHtml = ''; const letters = ['A','B','C','D'];
+        soal.opsi.forEach((opt, idx) => { const checked = jawaban[currentIndex] === letters[idx];
+            optsHtml += `<div class="option-item"><input type="radio" name="jawab" value="${letters[idx]}" id="opt_${idx}" ${checked ? 'checked' : ''}><label for="opt_${idx}" style="flex:1">${opt}</label></div>`;
+        });
+        optionsContainer.innerHTML = optsHtml;
+        let jawabanBenarText = soal.opsi.find(opt => opt.startsWith(soal.jawaban + ". ")) || soal.jawaban;
+        kunciJawabanDiv.style.display = 'block'; kunciJawabanDiv.innerHTML = `<i class="fas fa-key"></i> <strong>Kunci Jawaban:</strong> ${jawabanBenarText}`;
+        document.querySelectorAll('input[name="jawab"]').forEach(r => r.addEventListener('change', (e) => { jawaban[currentIndex] = e.target.value; updateStats(); }));
+        currentIdxSpan.innerText = currentIndex+1; updateStats();
+    }
+    function renderSoalGrid() {
+        soalGridDiv.innerHTML = '';
+        for (let i=0; i<40; i++) {
+            const btn = document.createElement('div'); btn.classList.add('soal-number');
+            if (jawaban[i] !== null) btn.classList.add('answered');
+            if (i === currentIndex) btn.classList.add('active');
+            btn.innerText = i+1;
+            btn.onclick = () => { if (!examSubmitted) { currentIndex = i; renderSoal(); renderSoalGrid(); } };
+            soalGridDiv.appendChild(btn);
+        }
+    }
+    function updateTimerDisplay() {
+        let m = Math.floor(timerSeconds / 60), s = timerSeconds % 60;
+        timerDisplay.innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timerSeconds <= 300 && timerSeconds > 0) { timerDisplay.classList.add('warning'); examHeader.classList.add('warning-timer'); }
+        else { timerDisplay.classList.remove('warning'); examHeader.classList.remove('warning-timer'); }
+        if (timerSeconds <= 0 && !examSubmitted) autoSubmit('⏰ WAKTU HABIS!');
+    }
+    function startTimer() { timerInterval = setInterval(() => { if (timerSeconds > 0 && !examSubmitted) { timerSeconds--; updateTimerDisplay(); } else if (timerSeconds <= 0 && !examSubmitted) { clearInterval(timerInterval); autoSubmit('⏰ WAKTU HABIS!'); } }, 1000); }
+    function showResult(benar, hasil) {
+        let html = `<p style="font-weight:bold;">✨ Skor Akhir: ${Math.round((benar/40)*100)} ✨</p><p>✅ Benar: ${benar}/40 &nbsp;|&nbsp; ❌ Salah: ${40-benar}</p><hr>`;
+        for (let item of hasil) html += `<div class="result-item ${item.status}"><strong>Soal ${item.nomor}</strong><br>Jawaban Anda: ${item.jawabanUser}<br>Jawaban Benar: ${item.jawabanBenar}<br>${item.benarSalah}</div>`;
+        resultDetails.innerHTML = html; resultModal.style.display = 'flex';
+    }
+    function autoSubmit(reason) {
+        if (examSubmitted) return; examSubmitted = true; clearInterval(timerInterval);
+        let benar = 0, hasilJawaban = [];
+        for(let i=0; i<40; i++) {
+            const soal = soalBank[i], jawabUser = jawaban[i] || '(Tidak dijawab)', jawabanBenar = soal.jawaban, isCorrect = (jawaban[i] === jawabanBenar);
+            if(isCorrect) benar++;
+            hasilJawaban.push({ nomor: i+1, jawabanUser: jawabUser, jawabanBenar: jawabanBenar, status: isCorrect ? 'correct' : 'wrong', benarSalah: isCorrect ? '✅ Benar' : '❌ Salah' });
+        }
+        showResult(benar, hasilJawaban); disableExam();
+    }
+    function disableExam() { document.querySelectorAll('input[name="jawab"]').forEach(r => r.disabled = true); prevBtn.disabled = true; nextBtn.disabled = true; submitBtn.disabled = true; }
+    function submitExam() { if(examSubmitted) return; let answered = jawaban.filter(j => j !== null).length; if(answered < 40 && !confirm(`Anda baru menjawab ${answered} dari 40 soal. Tetap kirim?`)) return; autoSubmit('📝 UJIAN DIKIRIMKAN'); }
+    closeResultBtn.onclick = () => resultModal.style.display = 'none';
+    prevBtn.onclick = () => { if(!examSubmitted && currentIndex>0) { currentIndex--; renderSoal(); renderSoalGrid(); } };
+    nextBtn.onclick = () => { if(!examSubmitted && currentIndex<39) { currentIndex++; renderSoal(); renderSoalGrid(); } else if(currentIndex===39 && !examSubmitted && confirm('Anda di soal terakhir. Kirim sekarang?')) submitExam(); };
+    submitBtn.onclick = submitExam;
+    verifyBtn.onclick = verifyLogin;
+    
+    function createBubbles() { const c = document.getElementById('bubbleContainer'); for(let i=0;i<40;i++) { let b = document.createElement('div'); b.classList.add('bubble'); b.style.width = (Math.random()*40+10)+'px'; b.style.height = b.style.width; b.style.left = Math.random()*100+'%'; b.style.animationDuration = Math.random()*12+8+'s'; b.style.animationDelay = Math.random()*8+'s'; c.appendChild(b); } }
+    createBubbles();
+</script>
+</body>
+</html>
